@@ -32,8 +32,6 @@ function rotateShape()
 end
 
 function onInputBegan(input, _gameProcessed)
-    currentShape = tetrisHolder.Sample
-
 	if input.UserInputType == Enum.UserInputType.Keyboard and currentShape then
         lastMove = tick()
 
@@ -51,7 +49,13 @@ function onInputBegan(input, _gameProcessed)
 
         if not validateMove(futureX, futureY) then return end
         currentShape.Position = UDim2.new(.45, futureX, 0, futureY)
-        print(currentShape.Position.X.Offset)
+        print(futureY)
+        
+        if futureY >= 647 then
+			currentShape = nil
+            futureX = 0
+            futureY = 55
+		end
 	end
 end
 
@@ -59,9 +63,21 @@ end
 UIS.InputBegan:Connect(onInputBegan)
 
 while task.wait(.5) do
-    if currentShape and tick() - lastMove > .5 then
-        if not validateMove(futureX, futureY) then return end
-        futureY = currentShape.Position.Y.Offset + squareSize + spaceSize
-        currentShape.Position = UDim2.new(.45, futureX, 0, futureY)
-    end
+	if currentShape == nil then
+		currentShape = tetrisHolder.Sample:Clone()
+        currentShape.Visible = true
+		currentShape.Parent = tetrisHolder
+	end
+
+    -- if currentShape then
+    --     futureY = currentShape.Position.Y.Offset + squareSize + spaceSize
+    --     if not validateMove(futureX, futureY) then return end
+    --     currentShape.Position = UDim2.new(.45, futureX, 0, futureY)
+
+    --     if futureY >= 647 then
+	-- 		currentShape = nil
+    --         futureX = 0
+    --         futureY = 55
+	-- 	end
+    -- end
 end
