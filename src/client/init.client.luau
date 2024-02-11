@@ -49,6 +49,7 @@ function onInputBegan(input, _gameProcessed)
 
         if not validateMove(futureX, futureY) then return end
         currentShape.Position = UDim2.new(.45, futureX, 0, futureY)
+        print(futureY)
         
         if futureY >= 647 then
 			currentShape = nil
