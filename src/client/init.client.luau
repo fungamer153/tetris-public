@@ -67,16 +67,4 @@ while task.wait(.5) do
         currentShape.Visible = true
 		currentShape.Parent = tetrisHolder
 	end
-
-    -- if currentShape then
-    --     futureY = currentShape.Position.Y.Offset + squareSize + spaceSize
-    --     if not validateMove(futureX, futureY) then return end
-    --     currentShape.Position = UDim2.new(.45, futureX, 0, futureY)
-
-    --     if futureY >= 647 then
-	-- 		currentShape = nil
-    --         futureX = 0
-    --         futureY = 55
-	-- 	end
-    -- end
 end
