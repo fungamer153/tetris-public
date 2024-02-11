@@ -10,7 +10,6 @@ local tetrisHolder = playerGui:WaitForChild("Tetris").Holder
 
 local squareSize = 35
 local spaceSize = 2
-local lastMove = 0
 
 local futureX = 0
 local futureY = 55
@@ -33,7 +32,6 @@ end
 
 function onInputBegan(input, _gameProcessed)
 	if input.UserInputType == Enum.UserInputType.Keyboard and currentShape then
-        lastMove = tick()
 
         if input.KeyCode == Enum.KeyCode.A then
             futureX = currentShape.Position.X.Offset - (squareSize + spaceSize)
