@@ -19,6 +19,7 @@ local gridHeight = Frame.Size.Y.Offset / blockSize
 
 local grid = {}
 local currentAngle = 0
+local shape
 
 local startX = 5
 local startY = 18
@@ -50,10 +51,64 @@ local shapes = {
 			{0, 1, 1},
 			{0, 1, 0}	
 		};
-	}
-}
+	};
 
-local shape = shapes["T_Block"]
+    L_Block = {		
+		Pivot = {2, 2};
+		
+		[0] = {
+			{1, 0, 0},
+			{1, 1, 1},
+			{0, 0, 0}	
+		};
+		
+		[90] = {
+			{0, 1, 0},
+			{0, 1, 0},
+			{1, 1, 0}	
+		};
+		
+		[180] = {
+			{0, 0, 0},
+			{1, 1, 1},
+			{0, 0, 1}	
+		};
+		
+		[270] = {
+			{0, 1, 1},
+			{0, 1, 0},
+			{0, 1, 0}	
+		};
+	};
+
+    O_Block = {		
+		Pivot = {2, 2};
+		
+		[0] = {
+			{0, 1, 1},
+			{0, 1, 1},
+			{0, 0, 0}	
+		};
+		
+		[90] = {
+			{0, 1, 1},
+			{0, 1, 1},
+			{0, 0, 0}	
+		};
+		
+		[180] = {
+			{0, 1, 1},
+			{0, 1, 1},
+			{0, 0, 0}	
+		};
+		
+		[270] = {
+			{0, 1, 1},
+			{0, 1, 1},
+			{0, 0, 0}	
+		};
+	};
+}
 
 local function createCell(x, y)
 	local cell = Instance.new("TextLabel")
@@ -63,6 +118,16 @@ local function createCell(x, y)
 	cell.BackgroundColor3 = Color3.new(1, 1, 1)
 	cell.Parent = Frame
 	return cell
+end
+
+function randomBlock()
+    local fakeTable = {}
+
+    for block,_ in shapes do
+        table.insert(fakeTable, block)
+    end
+
+    return shapes[fakeTable[math.random(1, #fakeTable)]]
 end
 
 local function clearGrid()
@@ -166,20 +231,18 @@ local function moveBlockLeft(grid)
 end
 
 local function moveBlockRight(grid)
-	local rotatedShape = shape[currentAngle]
 	local canMove = true
-	
 	local rotatedShape = shape[currentAngle]
 	local blockWidth = #rotatedShape[1]
 	local blockHeight = #rotatedShape
 	
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
-		
-	for i = 1, blockHeight do		
+    local rightCorner = {startY + differenceY, startX + differenceX}
+
+	for y = 1, blockHeight do		
 		for x = 1, blockWidth do
-			local rightCorner = {startY + differenceY, startX + differenceX - (x - 1)}
-			local value = grid[rightCorner[1] + (i - 1)][rightCorner[2]] 
+			local value = grid[rightCorner[1] + (y - 1)][rightCorner[2] - (x - 1)] 
 
 			if value == 1 and rightCorner[2] >= math.round(gridWidth) then
 				canMove = false
@@ -237,6 +300,7 @@ local function moveBlockDown(grid)
         end
 
         -- Block reached the bottom, respawn at the top
+        shape = randomBlock()
         generateTBlock(grid)
     end
 end
@@ -262,8 +326,10 @@ for y = 1, gridHeight do
 	end
 end
 
+shape = shapes["T_Block"]
+--shape = randomBlock()
 generateTBlock(grid)
 
 while task.wait(.5) do
-	moveBlockDown(grid)
+	--moveBlockDown(grid)
 end
