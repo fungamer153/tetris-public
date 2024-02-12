@@ -212,13 +212,13 @@ local function moveBlockLeft(grid)
 
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
+    local leftCorner = {startY + differenceY, startX - differenceX}
 
-	for i = 1, blockHeight do		
-		for x = 1, blockWidth do
-			local leftCorner = {startY + differenceY, startX - differenceX + (x - 1)}
-			local value = grid[leftCorner[1] + (i - 1)][leftCorner[2]] 
-
-			if value == 1 and leftCorner[2] <= 1 then
+	for x = 1, blockWidth do		
+		for y = 1, blockHeight do
+			local xShift = leftCorner[2] + (x - 1)
+			local value = grid[leftCorner[1] - (y - 1)][xShift]
+			if value == 1 and xShift <= 1 then
 				canMove = false
 				break
 			end
@@ -240,11 +240,11 @@ local function moveBlockRight(grid)
 	local differenceX = blockWidth - shape["Pivot"][1]
     local rightCorner = {startY + differenceY, startX + differenceX}
 
-	for y = 1, blockHeight do		
-		for x = 1, blockWidth do
-			local value = grid[rightCorner[1] + (y - 1)][rightCorner[2] - (x - 1)] 
-
-			if value == 1 and rightCorner[2] >= math.round(gridWidth) then
+	for x = 1, blockWidth do		
+		for y = 1, blockHeight do
+			local xShift = rightCorner[2] - (x - 1)
+			local value = grid[rightCorner[1] - (y - 1)][xShift]
+			if value == 1 and xShift >= math.round(gridWidth) then
 				canMove = false
 				break
 			end
@@ -326,10 +326,10 @@ for y = 1, gridHeight do
 	end
 end
 
-shape = shapes["T_Block"]
---shape = randomBlock()
+--shape = shapes["T_Block"]
+shape = randomBlock()
 generateTBlock(grid)
 
 while task.wait(.5) do
-	--moveBlockDown(grid)
+	moveBlockDown(grid)
 end
