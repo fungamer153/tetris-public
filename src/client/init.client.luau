@@ -1,5 +1,3 @@
--- Tetris UI Script
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -110,29 +108,19 @@ local function generateTBlock(grid, X, Y)
 	-- Draw the new shape
 	for y = 1, blockHeight do
 		for x = 1, blockWidth do
-            if startY - y + yFill > 0 then
+            if startY - y + yFill > 0 and rotatedShape[y][x] ~= 0 then
                 grid[startY - y + yFill][startX - x + xFill] = rotatedShape[y][x]                
             end
-		--	print(grid[startY + y][startX - x + xFill], startY + y)
 		end
 	end
-	
-	--for y = 1, blockHeight do
-	--	for x = 1, blockWidth do
-	--		grid[(startY + y) - 1][startX + x - 1] = shape[blockHeight - (y - 1)][x]
-	--	end
-	--end
 	
 	updateGrid(grid)
 end
 
 local function rotateBlock(grid)
-	--local startX, startY = findTBlockPosition(grid)
-
-	-- Find the center of the shape
-
-	-- Copy the current shape to a temporary variable
+	local canRotate = true
 	currentAngle += 90
+
 	if currentAngle == 360 then
 		currentAngle = 0
 	end
@@ -142,35 +130,8 @@ local function rotateBlock(grid)
 	elseif startX == math.round(gridWidth) then
 		startX = math.round(gridWidth) - 1
 	end
-	
-	--local rotatedShape = shapes["T_Block"][currentAngle]
-	-- Calculate the new starting position after rotation
-	--local newStartX = math.max(1, math.min(gridWidth - #rotatedShape[1] + 1, startX))
-	--local newStartY = math.max(1, math.min(gridHeight - #rotatedShape + 1, startY))
 
-	-- Check if the rotated shape can fit in the grid
-	local canRotate = true
-	--for y = 1, #rotatedShape do
-	--	for x = 1, #rotatedShape[1] do
-	--		if rotatedShape[y][x] == 1 then
-	--			--if newStartX + x - 1 < 1 or newStartX + x - 1 > gridWidth or newStartY + y - 1 > gridHeight then
-	--			--	canRotate = false
-	--			--	break
-	--			--elseif grid[newStartY + y - 1][newStartX + x - 1] == 1 then
-	--			--	canRotate = false
-	--			--	break
-	--			--end
-	--		end
-	--	end
-	--	if not canRotate then
-	--		break
-	--	end
-	--end
-		
-	-- Rotate the block if it can fit in the grid
 	if canRotate then
-		--	generateTBlock(grid, startX, startY, true) -- Clear the block at the previous position
-		--shape = rotatedShape
 		generateTBlock(grid, startX, startY)
 	end
 end
@@ -201,7 +162,6 @@ local function moveBlockLeft(grid)
 
 	if canMove then
 		generateTBlock(grid, startX - 1, startY)
-		--generateTBlock(grid, startX - 2, startY, true) -- Clear the block at the previous position
 	end	
 end
 
@@ -243,35 +203,23 @@ local function moveBlockDown(grid)
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
     local rightCorner = {startY - differenceY, startX + differenceX}
-    --if rightCorner[1] < 0 then return end 
-
-  --  print(rightCorner[1], startY)
 
     for y = 1, blockHeight do
         for x = 1, blockWidth do
-          --  print(rightCorner[1] , rightCorner[1] + (y - 1))
             if rightCorner[1] + (y - 1) > 0 then
                 local value = grid[rightCorner[1] + (y - 1)][rightCorner[2] - (x - 1)]
-            
-                if value == 1 and rightCorner[1] + (y - 1) == 1 then
+
+                if (value == 1 and rightCorner[1] + (y - 1) == 1) then
                     canMoveDown = false
+                elseif value == 1 then
+                    if grid[(rightCorner[1] + (y - 1)) - 1][rightCorner[2] - (x - 1)] == 2 then
+                        canMoveDown = false
+                    end
                 end 
             end
         end
     end
 
-	-- for i = 1, blockHeight do		
-	-- 	for x = 1, blockWidth do
-	-- 		local value = grid[rightCorner[1] + (i - 1)][rightCorner[2] - (x - 1)] 
-
-	-- 		if value == 1 and rightCorner[2] <= 1 then
-	-- 			canMoveDown = false
-	-- 			break
-	-- 		end
-	-- 	end
-	-- end
-	
-	--print(canMoveDown)
     -- Move the block down if it can
     if canMoveDown then
         generateTBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
@@ -287,7 +235,7 @@ local function moveBlockDown(grid)
                 end
             end
         end
-        
+
         -- Block reached the bottom, respawn at the top
         generateTBlock(grid)
     end
@@ -307,22 +255,6 @@ end
 
 UserInputService.InputBegan:Connect(handleKeyPress)
 
---function findTBlockPosition(grid)
---	local pivot = shape["Pivot"]
---	local reconstructedShape = {}
-	
---	for y = 1, gridHeight do
---		for x = 1, gridWidth do
---			if grid[y][x] == 1 then
---				reconstructedShape[#reconstructedShape + 1] = {}
---				--return x, y
---			end
---		end
---	end
---end
-
--- Initialize the grid and spawn a T-shaped block
-
 for y = 1, gridHeight do
 	grid[y] = {}
 	for x = 1, gridWidth do
@@ -335,6 +267,3 @@ generateTBlock(grid)
 while task.wait(.5) do
 	moveBlockDown(grid)
 end
-
--- Uncomment the line below if you want to update the grid periodically
--- game:GetService("RunService").Heartbeat:Connect(function() update() end)
