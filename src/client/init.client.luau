@@ -234,20 +234,23 @@ local function moveBlockDown(grid)
 	local rotatedShape = shape[currentAngle]
     local canMoveDown = true
 	
-	for y = 1, #rotatedShape do
-		for x = 1, #rotatedShape[y] do
-			if rotatedShape[y][x] == 1 then
-				if startY + y > gridHeight or (grid[startY + y][startX + x] == 2 and rotatedShape[y][x] == 1) or startY - 1 <= 0 then
-					--print(grid[startY + y][startX + x], shape[y][x] == 1)
-                    canMoveDown = false
-                    break
-                end
-            end
-        end
-        if not canMoveDown then
-            break
-        end
-    end
+	local blockWidth = #rotatedShape[1]
+	local blockHeight = #rotatedShape
+	
+	local differenceY = blockHeight - shape["Pivot"][1]
+	local differenceX = blockWidth - shape["Pivot"][1]
+    local rightCorner = {startY - differenceY, startX + differenceX}
+
+	for i = 1, blockHeight do		
+		for x = 1, blockWidth do
+			local value = grid[rightCorner[1] + (i - 1)][rightCorner[2] - (x - 1)] 
+
+			if value == 1 and rightCorner[2] <= 1 then
+				canMoveDown = false
+				break
+			end
+		end
+	end
 	
 	--print(canMoveDown)
     -- Move the block down if it can
@@ -298,8 +301,8 @@ end
 
 generateTBlock(grid)
 
-while wait(.5) do
-	--moveBlockDown(grid)
+while task.wait(.5) do
+	moveBlockDown(grid)
 end
 
 -- Uncomment the line below if you want to update the grid periodically
