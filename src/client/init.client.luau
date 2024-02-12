@@ -96,7 +96,8 @@ local function generateTBlock(grid, X, Y)
 	local blockWidth = #rotatedShape[1]
 	local blockHeight = #rotatedShape
 	local xFill = shape["Pivot"][1]
-		
+    local yFill = shape["Pivot"][2]
+
 	-- Clear the entire grid
 	for y = 1, gridHeight do
 		for x = 1, gridWidth do
@@ -105,11 +106,13 @@ local function generateTBlock(grid, X, Y)
 			end
 		end
 	end
-		
+
 	-- Draw the new shape
 	for y = 1, blockHeight do
 		for x = 1, blockWidth do
-			grid[startY + y][startX - x + xFill] = rotatedShape[y][x]
+            if startY - y + yFill > 0 then
+                grid[startY - y + yFill][startX - x + xFill] = rotatedShape[y][x]                
+            end
 		--	print(grid[startY + y][startX - x + xFill], startY + y)
 		end
 	end
@@ -240,23 +243,51 @@ local function moveBlockDown(grid)
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
     local rightCorner = {startY - differenceY, startX + differenceX}
+    --if rightCorner[1] < 0 then return end 
 
-	for i = 1, blockHeight do		
-		for x = 1, blockWidth do
-			local value = grid[rightCorner[1] + (i - 1)][rightCorner[2] - (x - 1)] 
+  --  print(rightCorner[1], startY)
 
-			if value == 1 and rightCorner[2] <= 1 then
-				canMoveDown = false
-				break
-			end
-		end
-	end
+    for y = 1, blockHeight do
+        for x = 1, blockWidth do
+          --  print(rightCorner[1] , rightCorner[1] + (y - 1))
+            if rightCorner[1] + (y - 1) > 0 then
+                local value = grid[rightCorner[1] + (y - 1)][rightCorner[2] - (x - 1)]
+            
+                if value == 1 and rightCorner[1] + (y - 1) == 1 then
+                    canMoveDown = false
+                end 
+            end
+        end
+    end
+
+	-- for i = 1, blockHeight do		
+	-- 	for x = 1, blockWidth do
+	-- 		local value = grid[rightCorner[1] + (i - 1)][rightCorner[2] - (x - 1)] 
+
+	-- 		if value == 1 and rightCorner[2] <= 1 then
+	-- 			canMoveDown = false
+	-- 			break
+	-- 		end
+	-- 	end
+	-- end
 	
 	--print(canMoveDown)
     -- Move the block down if it can
     if canMoveDown then
         generateTBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
     else
+        print("Reached bottom")
+        startX = 5
+        startY = 18
+
+        for y = 1, gridHeight do
+            for x = 1, gridWidth do
+                if grid[y][x] == 1 then
+                    grid[y][x] = 2
+                end
+            end
+        end
+        
         -- Block reached the bottom, respawn at the top
         generateTBlock(grid)
     end
