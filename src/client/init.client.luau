@@ -13,6 +13,7 @@ Frame.BackgroundTransparency = 0.5
 Frame.BackgroundColor3 = Color3.new(0, 0, 0)
 Frame.Parent = ScreenGui
 
+local currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
 local blockSize = 20 -- Adjust the size of each cell
 local gridWidth = Frame.Size.X.Offset / blockSize
 local gridHeight = Frame.Size.Y.Offset / blockSize
@@ -110,13 +111,23 @@ local shapes = {
 	};
 }
 
-local function createCell(x, y)
-	local cell = Instance.new("TextLabel")
+local pastColorsTable = {}
+
+local function createCell(x, y, lastSquare)
+	local pastColor = pastColorsTable[x + y]
+	local cell = Instance.new("Frame")
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
+	cell.BorderSizePixel = 0
 	cell.Position = UDim2.new(0, x * blockSize, 0, y * blockSize)
 	cell.BackgroundTransparency = 0.5
-	cell.BackgroundColor3 = Color3.new(1, 1, 1)
 	cell.Parent = Frame
+
+	if pastColor and grid[lastSquare[2]][lastSquare[1]] == 2 then
+		cell.BackgroundColor3 = Color3.fromRGB(pastColor.R, pastColor.G, pastColor.B)
+	elseif grid[lastSquare[2]][lastSquare[1]]  == 1 then
+		cell.BackgroundColor3 = currentColor
+	end
+
 	return cell
 end
 
@@ -132,7 +143,7 @@ end
 
 local function clearGrid()
 	for _, child in pairs(Frame:GetChildren()) do
-		if child:IsA("TextLabel") then
+		if child:IsA("Frame") then
 			child:Destroy()
 		end
 	end
@@ -144,7 +155,7 @@ local function updateGrid(grid)
 	for y = 1, #grid do
 		for x = 1, #grid[y] do
 			if grid[y][x] == 1 or grid[y][x] == 2 then
-				createCell(x - 1, gridHeight - y)
+				createCell(x - 1, gridHeight - y, {x, y})
 			end
 		end
 	end
@@ -288,18 +299,21 @@ local function moveBlockDown(grid)
         generateTBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
     else
         print("Reached bottom")
-        startX = 5
-        startY = 18
-
-        for y = 1, gridHeight do
+		for y = 1, gridHeight do
             for x = 1, gridWidth do
                 if grid[y][x] == 1 then
                     grid[y][x] = 2
+					pastColorsTable[x + y] = Color3.new(currentColor.R, currentColor.G, currentColor.B)
                 end
             end
         end
+		
+		startX = 5
+        startY = 18
 
+		print(pastColorsTable)
         -- Block reached the bottom, respawn at the top
+		currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
         shape = randomBlock()
         generateTBlock(grid)
     end
