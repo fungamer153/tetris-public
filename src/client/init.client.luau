@@ -22,6 +22,7 @@ local grid = {}
 local currentAngle = 0
 local shape
 
+local gameRunning = true
 local startX = 5
 local startY = 18
 
@@ -299,6 +300,8 @@ local function moveBlockDown(grid)
         generateTBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
     else
         print("Reached bottom")
+		if startY >= 18 then gameRunning = false return end
+
 		for y = 1, gridHeight do
             for x = 1, gridWidth do
                 if grid[y][x] == 1 then
@@ -344,6 +347,7 @@ end
 shape = randomBlock()
 generateTBlock(grid)
 
-while task.wait(.5) do
+while gameRunning do
+	task.wait(.5)
 	moveBlockDown(grid)
 end
