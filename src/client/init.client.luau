@@ -114,7 +114,7 @@ local shapes = {
 
 local pastColorsTable = {}
 
-local function createCell(x, y, lastSquare)
+local function createCell(x, y, value)
 	local pastColor = pastColorsTable[x + y]
 	local cell = Instance.new("Frame")
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
@@ -123,9 +123,10 @@ local function createCell(x, y, lastSquare)
 	cell.BackgroundTransparency = 0.5
 	cell.Parent = Frame
 
-	if pastColor and grid[lastSquare[2]][lastSquare[1]] == 2 then
-		cell.BackgroundColor3 = Color3.fromRGB(pastColor.R, pastColor.G, pastColor.B)
-	elseif grid[lastSquare[2]][lastSquare[1]]  == 1 then
+	print(value)
+	if value == 2 then
+		cell.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	elseif value == 1 then
 		cell.BackgroundColor3 = currentColor
 	end
 
@@ -156,7 +157,7 @@ local function updateGrid(grid)
 	for y = 1, #grid do
 		for x = 1, #grid[y] do
 			if grid[y][x] == 1 or grid[y][x] == 2 then
-				createCell(x - 1, gridHeight - y, {x, y})
+				createCell(x - 1, gridHeight - y, grid[y][x])
 			end
 		end
 	end
