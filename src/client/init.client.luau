@@ -163,7 +163,7 @@ function updateGrid(grid)
 	end
 end
 
-local function generateTBlock(grid, X, Y)
+function generateTBlock(grid, X, Y)
 	if X then startX = X end
 	if Y then startY = Y end
 	
