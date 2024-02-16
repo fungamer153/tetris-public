@@ -195,7 +195,7 @@ function generateTBlock(grid, X, Y)
 	updateGrid(grid)
 end
 
-local function rotateBlock(grid)
+function rotateBlock(grid)
 	local canRotate = true
 	currentAngle += 90
 
