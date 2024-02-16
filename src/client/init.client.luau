@@ -143,7 +143,7 @@ function randomBlock()
     return shapes[fakeTable[math.random(1, #fakeTable)]]
 end
 
-local function clearGrid()
+function clearGrid()
 	for _, child in pairs(Frame:GetChildren()) do
 		if child:IsA("Frame") then
 			child:Destroy()
@@ -151,7 +151,7 @@ local function clearGrid()
 	end
 end
 
-local function updateGrid(grid)
+function updateGrid(grid)
 	clearGrid()
 		
 	for y = 1, #grid do
