@@ -215,7 +215,7 @@ local function rotateBlock(grid)
 end
 
 
-local function moveBlockLeft(grid)
+function moveBlockLeft(grid)
 	local rotatedShape = shape[currentAngle]
 	local canMove = true
 
