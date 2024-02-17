@@ -216,7 +216,6 @@ end
 
 
 function moveBlockLeft(grid)
-	local rotatedShape = shape[currentAngle]
 	local canMove = true
 
 	local rotatedShape = shape[currentAngle]
