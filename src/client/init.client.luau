@@ -123,7 +123,6 @@ local function createCell(x, y, value)
 	cell.BackgroundTransparency = 0.5
 	cell.Parent = Frame
 
-	print(value)
 	if value == 2 then
 		cell.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 	elseif value == 1 then
