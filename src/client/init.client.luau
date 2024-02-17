@@ -115,7 +115,6 @@ local shapes = {
 local pastColorsTable = {}
 
 local function createCell(x, y, value)
-	local pastColor = pastColorsTable[x + y]
 	local cell = Instance.new("Frame")
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
 	cell.BorderSizePixel = 0
