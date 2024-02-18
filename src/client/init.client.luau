@@ -114,7 +114,7 @@ local shapes = {
 
 local pastColorsTable = {}
 
-local function createCell(x, y, value)
+function createCell(x, y, value)
 	local cell = Instance.new("Frame")
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
 	cell.BorderSizePixel = 0
@@ -240,7 +240,7 @@ function moveBlockLeft(grid)
 	end	
 end
 
-local function moveBlockRight(grid)
+function moveBlockRight(grid)
 	local canMove = true
 	local rotatedShape = shape[currentAngle]
 	local blockWidth = #rotatedShape[1]
@@ -266,7 +266,7 @@ local function moveBlockRight(grid)
 	end	
 end
 
-local function moveBlockDown(grid)
+function moveBlockDown(grid)
 	local rotatedShape = shape[currentAngle]
     local canMoveDown = true
 	
@@ -301,18 +301,40 @@ local function moveBlockDown(grid)
 		if startY >= 18 then gameRunning = false return end
 
 		for y = 1, gridHeight do
+			local fullRow = true
+			
+			-- Turn any current moving blocks to placed blocks
             for x = 1, gridWidth do
                 if grid[y][x] == 1 then
                     grid[y][x] = 2
-					pastColorsTable[x + y] = Color3.new(currentColor.R, currentColor.G, currentColor.B)
+				elseif grid[y][x] == 0 then
+					-- If a row has 0 gaps then It's full to remove
+					fullRow = false
                 end
             end
+
+			if fullRow then
+				-- Go up in each row to move each block down by 1 row
+				for x = 1, gridWidth do
+					if grid[y][x] == 2 then
+						grid[y][x] = 0
+						
+						for falseY = 1, (gridHeight - y) - 1 do
+							if grid[y + falseY][x] then
+								if grid[y + falseY][x] == 2 or grid[y + falseY][x] == 1 then
+									grid[y + falseY][x] = 0
+									grid[y + (falseY - 1)][x] = 2
+								end
+							end
+						end
+					end
+				end
+			end
         end
 		
 		startX = 5
         startY = 18
 
-		print(pastColorsTable)
         -- Block reached the bottom, respawn at the top
 		currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
         shape = randomBlock()
@@ -320,7 +342,7 @@ local function moveBlockDown(grid)
     end
 end
 
-local function handleKeyPress(input)
+function handleKeyPress(input)
 	if input.KeyCode == Enum.KeyCode.A then
 		moveBlockLeft(grid)
 	elseif input.KeyCode == Enum.KeyCode.D then
@@ -341,7 +363,6 @@ for y = 1, gridHeight do
 	end
 end
 
---shape = shapes["T_Block"]
 shape = randomBlock()
 generateTBlock(grid)
 
