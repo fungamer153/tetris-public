@@ -112,8 +112,7 @@ local shapes = {
 	};
 }
 
-local pastColorsTable = {}
-
+-- Creates new block
 function createCell(x, y, value)
 	local cell = Instance.new("Frame")
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
@@ -131,6 +130,7 @@ function createCell(x, y, value)
 	return cell
 end
 
+-- Get a new random shape
 function randomBlock()
     local fakeTable = {}
 
@@ -141,6 +141,7 @@ function randomBlock()
     return shapes[fakeTable[math.random(1, #fakeTable)]]
 end
 
+-- Clears the whole grid
 function clearGrid()
 	for _, child in pairs(Frame:GetChildren()) do
 		if child:IsA("Frame") then
@@ -149,6 +150,7 @@ function clearGrid()
 	end
 end
 
+-- Visualizes the grid from table to UI
 function updateGrid(grid)
 	clearGrid()
 		
@@ -161,6 +163,7 @@ function updateGrid(grid)
 	end
 end
 
+-- Creates a new movable block object
 function generateTBlock(grid, X, Y)
 	if X then startX = X end
 	if Y then startY = Y end
@@ -193,6 +196,7 @@ function generateTBlock(grid, X, Y)
 	updateGrid(grid)
 end
 
+-- Rotate the current shape
 function rotateBlock(grid)
 	local canRotate = true
 	currentAngle += 90
@@ -201,6 +205,7 @@ function rotateBlock(grid)
 		currentAngle = 0
 	end
 	
+	-- If we are trying to rotate too close to the border then bounce back the block
 	if startX == 1 then
 		startX = 2
 	elseif startX == math.round(gridWidth) then
@@ -212,7 +217,7 @@ function rotateBlock(grid)
 	end
 end
 
-
+-- Move blocks
 function moveBlockLeft(grid)
 	local canMove = true
 
@@ -220,6 +225,7 @@ function moveBlockLeft(grid)
 	local blockWidth = #rotatedShape[1]
 	local blockHeight = #rotatedShape
 
+	-- Getting the pivot point
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
     local leftCorner = {startY + differenceY, startX - differenceX}
@@ -240,12 +246,14 @@ function moveBlockLeft(grid)
 	end	
 end
 
+-- Move blocks
 function moveBlockRight(grid)
 	local canMove = true
 	local rotatedShape = shape[currentAngle]
 	local blockWidth = #rotatedShape[1]
 	local blockHeight = #rotatedShape
-	
+
+	-- Getting the pivot point
 	local differenceY = blockHeight - shape["Pivot"][1]
 	local differenceX = blockWidth - shape["Pivot"][1]
     local rightCorner = {startY + differenceY, startX + differenceX}
@@ -266,6 +274,7 @@ function moveBlockRight(grid)
 	end	
 end
 
+-- Shift block down
 function moveBlockDown(grid)
 	local rotatedShape = shape[currentAngle]
     local canMoveDown = true
@@ -332,6 +341,7 @@ function moveBlockDown(grid)
 			end
         end
 		
+		-- Reset the position for the next block
 		startX = 5
         startY = 18
 
@@ -354,8 +364,6 @@ function handleKeyPress(input)
 	end
 end
 
-UserInputService.InputBegan:Connect(handleKeyPress)
-
 for y = 1, gridHeight do
 	grid[y] = {}
 	for x = 1, gridWidth do
@@ -365,6 +373,8 @@ end
 
 shape = randomBlock()
 generateTBlock(grid)
+
+UserInputService.InputBegan:Connect(handleKeyPress)
 
 while gameRunning do
 	task.wait(.5)
