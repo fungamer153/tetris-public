@@ -1,10 +1,13 @@
+--// Services
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
+--// Directories
 local player = Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = player.PlayerGui
 
+-- Create the visual grid
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0, 220, 0, 440) -- Adjust the size of the game board
 Frame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center the frame
@@ -13,6 +16,7 @@ Frame.BackgroundTransparency = 0.5
 Frame.BackgroundColor3 = Color3.new(0, 0, 0)
 Frame.Parent = ScreenGui
 
+--// Variables
 local currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
 local blockSize = 20 -- Adjust the size of each cell
 local gridWidth = Frame.Size.X.Offset / blockSize
@@ -26,6 +30,7 @@ local gameRunning = true
 local startX = 5
 local startY = 18
 
+--// Shapes
 local shapes = {
 	T_Block = {		
 		Pivot = {2, 2};
@@ -112,6 +117,8 @@ local shapes = {
 	};
 }
 
+--// Functions
+
 -- Creates new block
 function createCell(x, y, value)
 	local cell = Instance.new("Frame")
@@ -164,7 +171,7 @@ function updateGrid(grid)
 end
 
 -- Creates a new movable block object
-function generateTBlock(grid, X, Y)
+function generateBlock(grid, X, Y)
 	if X then startX = X end
 	if Y then startY = Y end
 	
@@ -213,7 +220,7 @@ function rotateBlock(grid)
 	end
 
 	if canRotate then
-		generateTBlock(grid, startX, startY)
+		generateBlock(grid, startX, startY)
 	end
 end
 
@@ -242,7 +249,7 @@ function moveBlockLeft(grid)
 	end
 
 	if canMove then
-		generateTBlock(grid, startX - 1, startY)
+		generateBlock(grid, startX - 1, startY)
 	end	
 end
 
@@ -270,7 +277,7 @@ function moveBlockRight(grid)
 	end
 		
 	if canMove then
-		generateTBlock(grid, startX + 1, startY)
+		generateBlock(grid, startX + 1, startY)
 	end	
 end
 
@@ -304,7 +311,7 @@ function moveBlockDown(grid)
 
     -- Move the block down if it can
     if canMoveDown then
-        generateTBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
+        generateBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
     else
         print("Reached bottom")
 		if startY >= 18 then gameRunning = false return end
@@ -348,7 +355,7 @@ function moveBlockDown(grid)
         -- Block reached the bottom, respawn at the top
 		currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
         shape = randomBlock()
-        generateTBlock(grid)
+        generateBlock(grid)
     end
 end
 
@@ -372,7 +379,7 @@ for y = 1, gridHeight do
 end
 
 shape = randomBlock()
-generateTBlock(grid)
+generateBlock(grid)
 
 UserInputService.InputBegan:Connect(handleKeyPress)
 
