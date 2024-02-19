@@ -106,7 +106,7 @@ local shapes: table = {
 		[180] = {
 			{0, 0, 0},
 			{1, 1, 1},
-			{1, 0, 1}	
+			{1, 0, 0}	
 		};
 		
 		[270] = {
@@ -170,7 +170,7 @@ function createVisualGrid()
 		end
 	end
 
-	script.Theme:Play()
+	--script.Theme:Play()
 	shape = randomBlock()
 	generateBlock(grid)
 end
@@ -295,10 +295,14 @@ function moveBlockLeft(grid: table)
 
 	for x: IntValue = 1, blockWidth do		
 		for y: IntValue = 1, blockHeight do
+			if (leftCorner[1] - (y - 1) < 1) then continue end
 			local xShift: IntValue = leftCorner[2] + (x - 1)
 			local value: IntValue = grid[leftCorner[1] - (y - 1)][xShift]
 
 			if value == 1 and xShift <= 1 then
+				canMove = false
+				break
+			elseif value == 1 and grid[leftCorner[1] - (y - 1)][xShift - 1] == 2  then
 				canMove = false
 				break
 			end
@@ -325,10 +329,14 @@ function moveBlockRight(grid: table)
 
 	for x: IntValue = 1, blockWidth do		
 		for y: IntValue = 1, blockHeight do
+			if (rightCorner[1] - (y - 1) < 1) then continue end
 			local xShift: IntValue = rightCorner[2] - (x - 1)
 			local value: IntValue = grid[rightCorner[1] - (y - 1)][xShift]
 
 			if value == 1 and xShift >= math.round(gridWidth) then
+				canMove = false
+				break
+			elseif value == 1 and grid[rightCorner[1] - (y - 1)][xShift + 1] == 2  then
 				canMove = false
 				break
 			end
@@ -371,7 +379,7 @@ function moveBlockDown(grid: table)
 
     -- Move the block down if it can
     if canMoveDown then
-        generateBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
+        generateBlock(grid, startX, math.clamp(startY - 1, 1, gridHeight - 1), true) -- Clear the block at the previous position
     else
 		if startY >= 18 then gameRunning = false return end
 		placeSound:Play()
