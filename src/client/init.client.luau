@@ -22,6 +22,8 @@ local gameRunning: boolean = true
 
 local moveSound: Sound = script.Move
 local rotateSound: Sound = script.Rotate
+local clearSound: Sound = script.Clear
+local placeSound: Sound = script.Place
 
 local cooldownTime: NumberValue = .5
 local lastTick: NumberValue = 0
@@ -58,7 +60,7 @@ local shapes: table = {
 		};
 	};
 
-    L_Block = {		
+    J_Block = {		
 		Pivot = {2, 2};
 		
 		[0] = {
@@ -83,6 +85,34 @@ local shapes: table = {
 			{0, 1, 1},
 			{0, 1, 0},
 			{0, 1, 0}	
+		};
+	};
+
+	L_Block = {		
+		Pivot = {2, 2};
+		
+		[0] = {
+			{0, 0, 1},
+			{1, 1, 1},
+			{0, 0, 0}	
+		};
+		
+		[90] = {
+			{1, 1, 0},
+			{0, 1, 0},
+			{0, 1, 0}	
+		};
+		
+		[180] = {
+			{0, 0, 0},
+			{1, 1, 1},
+			{1, 0, 1}	
+		};
+		
+		[270] = {
+			{0, 1, 0},
+			{0, 1, 0},
+			{0, 1, 1}	
 		};
 	};
 
@@ -343,8 +373,8 @@ function moveBlockDown(grid: table)
     if canMoveDown then
         generateBlock(grid, startX, startY - 1, true) -- Clear the block at the previous position
     else
-        print("Reached bottom")
 		if startY >= 18 then gameRunning = false return end
+		placeSound:Play()
 
 		for y: IntValue = 1, gridHeight do
 			local fullRow: boolean = true
@@ -360,6 +390,7 @@ function moveBlockDown(grid: table)
             end
 
 			if fullRow then
+				clearSound:Play()
 				-- Go up in each row to move each block down by 1 row
 				for x: IntValue = 1, gridWidth do
 					if grid[y][x] == 2 then
@@ -390,6 +421,8 @@ function moveBlockDown(grid: table)
 end
 
 function handleKeyPress(input)
+	if not gameRunning then return end
+
 	if input.KeyCode == Enum.KeyCode.A then
 		moveBlockLeft(grid)
 	elseif input.KeyCode == Enum.KeyCode.D then
