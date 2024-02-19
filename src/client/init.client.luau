@@ -137,6 +137,7 @@ function createVisualGrid()
 		end
 	end
 
+	script.Theme:Play()
 	shape = randomBlock()
 	generateBlock(grid)
 end
@@ -391,10 +392,20 @@ function handleKeyPress(input)
 	
 	if input.KeyCode == Enum.KeyCode.W then
 		rotateBlock(grid)
+	elseif input.KeyCode == Enum.KeyCode.S then
+		cooldownTime = .1
+	end
+end
+
+function handleKeyRelease(input)
+	if input.KeyCode == Enum.KeyCode.S then
+		cooldownTime = .5
 	end
 end
 
 --// Events
+player.CharacterAdded:Wait():WaitForChild("Humanoid").WalkSpeed = 0
+
 gameConnection = Run.Heartbeat:Connect(function(deltaTime)
 	if not gameRunning then gameConnection:Disconnect() return end
 	if tick() - lastTick < cooldownTime then return end
@@ -404,3 +415,4 @@ end)
 
 createVisualGrid()
 UserInputService.InputBegan:Connect(handleKeyPress)
+UserInputService.InputEnded:Connect(handleKeyRelease)
