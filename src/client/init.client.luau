@@ -20,6 +20,9 @@ local shape: table
 local gameConnection: RBXScriptConnection
 local gameRunning: boolean = true
 
+local moveSound: Sound = script.Move
+local rotateSound: Sound = script.Rotate
+
 local cooldownTime: NumberValue = .5
 local lastTick: NumberValue = 0
 local startX: IntValue = 5
@@ -242,6 +245,7 @@ function rotateBlock(grid: table)
 	end
 
 	if canRotate then
+		rotateSound:Play()
 		generateBlock(grid, startX, startY)
 	end
 end
@@ -272,6 +276,7 @@ function moveBlockLeft(grid: table)
 	end
 
 	if canMove then
+		moveSound:Play()
 		generateBlock(grid, startX - 1, startY)
 	end	
 end
@@ -301,6 +306,7 @@ function moveBlockRight(grid: table)
 	end
 		
 	if canMove then
+		moveSound:Play()
 		generateBlock(grid, startX + 1, startY)
 	end	
 end
