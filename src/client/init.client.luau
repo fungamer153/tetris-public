@@ -1,4 +1,5 @@
 --// Services
+local Run = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -16,7 +17,11 @@ local grid: table = {}
 local currentAngle: IntValue = 0
 local shape: table
 
+local gameConnection: RBXScriptConnection
 local gameRunning: boolean = true
+
+local cooldownTime: NumberValue = .5
+local lastTick: NumberValue = 0
 local startX: IntValue = 5
 local startY: IntValue = 18
 
@@ -390,10 +395,12 @@ function handleKeyPress(input)
 end
 
 --// Events
+gameConnection = Run.Heartbeat:Connect(function(deltaTime)
+	if not gameRunning then gameConnection:Disconnect() return end
+	if tick() - lastTick < cooldownTime then return end
+	lastTick = tick()
+	moveBlockDown(grid)
+end)
+
 createVisualGrid()
 UserInputService.InputBegan:Connect(handleKeyPress)
-
-while gameRunning do
-	task.wait(.5)
-	moveBlockDown(grid)
-end
