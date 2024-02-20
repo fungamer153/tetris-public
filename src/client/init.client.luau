@@ -1,5 +1,6 @@
 --// Services
 local Run = game:GetService("RunService")
+local TS = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -15,6 +16,7 @@ local gridHeight: IntValue
 local Frame: Frame
 local grid: table = {}
 local currentAngle: IntValue = 0
+local currentPoints: IntValue = 0
 local shape: table
 
 local gameConnection: RBXScriptConnection
@@ -29,6 +31,53 @@ local cooldownTime: NumberValue = .5
 local lastTick: NumberValue = 0
 local startX: IntValue = 5
 local startY: IntValue = 18
+
+local messages: table = {
+	Positive = {
+		"WOWIE!";
+		"IT'S A HOME RUN!";
+		"WOWZERS!";
+		"YOU COULD DO THAT?";
+		"DUB SO BIG WE CALLED THE WHOLE TEAM TO SEE";
+		"CONGRATS";
+		"WHO'S COOKING?";
+		"YIPPERS!";
+		"PRINT('WIN')";
+		"TETRINO FRENZY";
+		"REAL???";
+		"MEGA MATCH!";
+		"PERFECT PLACEMENT!";
+		"FLAWLESS!";
+		"CHEETAH SPEED!";
+	};
+
+	Negative = {
+		"KEEP GOING";
+		"99% OF TETRIS PLAYERS QUIT RIGHT BEFORE THEIR BIG WIN";
+		"MISS!";
+		"OKAY, NOW MAKE DO THIS TO A FULL ROW";
+		"THIS IS NOT LEGO";
+		"J AND L BLOCK ARE DIFFERENT";
+		"PRECISION MATTERS MORE THAN SPEED";
+		"L SO BIG I BOSSMAN HAD TO SWITCH SCREENS";
+		"WHO SAID STOP?";
+		"STUCK SMART GUY?";
+		"EVEN A FISH CAN DO BETTER";
+		"THE AIM IS NOT TO MAKE A TOWER";
+		"YOU ARE 100 POINTS AWAY FROM BEATING THE OTHER PLAYER";
+		"HOW LONG HAVE I SPENT HERE? I DON'T KNOW";
+		"LETS TRY THAT AGAIN"
+	};
+
+	Loose = {
+		"We'll get them next time.";
+		"10-4 Dispatch returning home.";
+		"Better luck next time!";
+		"Okay, now we both can go home.";
+		"Lets try again!";
+		"Come back when you are maybe a little mmm better!"
+	}
+}
 
 --// Shapes
 local shapes: table = {
@@ -150,15 +199,12 @@ local shapes: table = {
 -- Creates new block
 function createVisualGrid()
 	local ScreenGui: ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Name = "Tetris"
 	ScreenGui.Parent = player.PlayerGui
 
-	Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(0, 220, 0, 440) -- Adjust the size of the game board
-	Frame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center the frame
-	Frame.AnchorPoint = Vector2.new(.5, .5)
-	Frame.BackgroundTransparency = 0.5
-	Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	Frame.Parent = ScreenGui
+	local newFrame: Frame = script.Frame:Clone()
+	newFrame.Parent = ScreenGui
+	Frame = newFrame.Holder
 
 	gridWidth = Frame.Size.X.Offset / blockSize
     gridHeight = Frame.Size.Y.Offset / blockSize
@@ -170,7 +216,10 @@ function createVisualGrid()
 		end
 	end
 
-	--script.Theme:Play()
+	Frame.Parent.ScoreLower.Text = "0"
+	Frame.Parent.ScoreUpper.Text = "0"
+
+	script.Theme:Play()
 	shape = randomBlock()
 	generateBlock(grid)
 end
@@ -180,7 +229,8 @@ function createCell(x: IntValue, y: IntValue, value: IntValue)
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
 	cell.BorderSizePixel = 0
 	cell.Position = UDim2.new(0, x * blockSize, 0, y * blockSize)
-	cell.BackgroundTransparency = 0.5
+	cell.BackgroundTransparency = 0.25
+	cell.ZIndex = 2
 	cell.Parent = Frame
 
 	if value == 2 then
@@ -381,7 +431,7 @@ function moveBlockDown(grid: table)
     if canMoveDown then
         generateBlock(grid, startX, math.clamp(startY - 1, 1, gridHeight - 1), true) -- Clear the block at the previous position
     else
-		if startY >= 18 then gameRunning = false return end
+		if startY >= 18 then gameRunning = false endGame() return end
 		placeSound:Play()
 
 		for y: IntValue = 1, gridHeight do
@@ -398,7 +448,13 @@ function moveBlockDown(grid: table)
             end
 
 			if fullRow then
+				addPoints()
 				clearSound:Play()
+
+				local randomHint = messages["Positive"][math.random(1, #messages["Positive"])]
+				Frame.Parent.HintLower.Text = randomHint
+				Frame.Parent.HintUpper.Text = randomHint
+
 				-- Go up in each row to move each block down by 1 row
 				for x: IntValue = 1, gridWidth do
 					if grid[y][x] == 2 then
@@ -414,6 +470,12 @@ function moveBlockDown(grid: table)
 						end
 					end
 				end
+
+				break
+			elseif fullRow == false then
+				local randomHint = messages["Negative"][math.random(1, #messages["Negative"])]
+				Frame.Parent.HintLower.Text = randomHint
+				Frame.Parent.HintUpper.Text = randomHint
 			end
         end
 		
@@ -426,6 +488,18 @@ function moveBlockDown(grid: table)
         shape = randomBlock()
         generateBlock(grid)
     end
+end
+
+function addPoints()
+	currentPoints += 100
+	Frame.Parent.ScoreUpper.Text = currentPoints
+	Frame.Parent.ScoreLower.Text = currentPoints
+end
+
+function endGame()
+	local randomHint = messages["Loose"][math.random(1, #messages["Loose"])]
+	Frame.Parent.GameOver.TextLabel.Text = randomHint
+	TS:Create(Frame.Parent.GameOver, TweenInfo.new(.25, Enum.EasingStyle.back, Enum.EasingDirection.In), {Position = UDim.new(0.5, 0, 0.5, 0)}):Play()
 end
 
 function handleKeyPress(input)
