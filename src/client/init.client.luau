@@ -26,6 +26,7 @@ local moveSound: Sound = script.Move
 local rotateSound: Sound = script.Rotate
 local clearSound: Sound = script.Clear
 local placeSound: Sound = script.Place
+local themeSound: Sound = script.Theme
 
 local cooldownTime: NumberValue = .5
 local lastTick: NumberValue = 0
@@ -219,7 +220,8 @@ function createVisualGrid()
 	Frame.Parent.ScoreLower.Text = "0"
 	Frame.Parent.ScoreUpper.Text = "0"
 
-	script.Theme:Play()
+	themeSound:Play()
+	TS:Create(themeSound, TweenInfo.new(.2), {PlaybackSpeed = 1}):Play()
 	shape = randomBlock()
 	generateBlock(grid)
 end
@@ -498,8 +500,12 @@ end
 
 function endGame()
 	local randomHint = messages["Loose"][math.random(1, #messages["Loose"])]
+	Frame.Parent.GameOver.Score.Text = currentPoints
 	Frame.Parent.GameOver.TextLabel.Text = randomHint
-	TS:Create(Frame.Parent.GameOver, TweenInfo.new(.25, Enum.EasingStyle.back, Enum.EasingDirection.In), {Position = UDim.new(0.5, 0, 0.5, 0)}):Play()
+	TS:Create(Frame.Parent.GameOver, TweenInfo.new(.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+	TS:Create(themeSound, TweenInfo.new(.7), {PlaybackSpeed = 0}):Play()
+	task.wait(.7)
+	themeSound:Stop()
 end
 
 function handleKeyPress(input)
