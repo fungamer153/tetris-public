@@ -34,6 +34,7 @@ local startX: IntValue = 5
 local startY: IntValue = 18
 
 local messages: table = {
+	-- When you clear a row the following will be displayed
 	Positive = {
 		"WOWIE!";
 		"IT'S A HOME RUN!";
@@ -52,6 +53,7 @@ local messages: table = {
 		"CHEETAH SPEED!";
 	};
 
+	-- When you misplace a block the following will be displayed
 	Negative = {
 		"KEEP GOING";
 		"99% OF TETRIS PLAYERS QUIT RIGHT BEFORE THEIR BIG WIN";
@@ -70,13 +72,16 @@ local messages: table = {
 		"LETS TRY THAT AGAIN"
 	};
 
+	-- When you loose the game following will be displayed
 	Loose = {
 		"We'll get them next time.";
 		"10-4 Dispatch returning home.";
 		"Better luck next time!";
 		"Okay, now we both can go home.";
 		"Lets try again!";
-		"Come back when you are maybe a little mmm better!"
+		"Come back when you are maybe a little mmm better!";
+		"When you try your best but you don't succeed";
+		"Womp womp"
 	}
 }
 
@@ -231,7 +236,7 @@ function createCell(x: IntValue, y: IntValue, value: IntValue)
 	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
 	cell.BorderSizePixel = 0
 	cell.Position = UDim2.new(0, x * blockSize, 0, y * blockSize)
-	cell.BackgroundTransparency = 0.25
+	cell.BackgroundTransparency = 0.1
 	cell.ZIndex = 2
 	cell.Parent = Frame
 
@@ -500,8 +505,12 @@ end
 
 function endGame()
 	local randomHint = messages["Loose"][math.random(1, #messages["Loose"])]
-	Frame.Parent.GameOver.Score.Text = currentPoints
+
+	Frame.Parent.GameOver.Score.Text = "Score: "..currentPoints
 	Frame.Parent.GameOver.TextLabel.Text = randomHint
+	Frame.Parent.HintLower.Text = ""
+	Frame.Parent.HintUpper.Text = ""
+
 	TS:Create(Frame.Parent.GameOver, TweenInfo.new(.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
 	TS:Create(themeSound, TweenInfo.new(.7), {PlaybackSpeed = 0}):Play()
 	task.wait(.7)
