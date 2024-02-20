@@ -30,8 +30,8 @@ local themeSound: Sound = script.Theme
 
 local cooldownTime: NumberValue = .5
 local lastTick: NumberValue = 0
-local startX: IntValue = 5
-local startY: IntValue = 18
+local startX: IntValue = 5 -- Starting width value
+local startY: IntValue = 20 -- Starting height
 
 local messages: table = {
 	-- When you clear a row the following will be displayed
@@ -488,7 +488,7 @@ function moveBlockDown(grid: table)
 		
 		-- Reset the position for the next block
 		startX = 5
-        startY = 18
+        startY = 20
 
         -- Block reached the bottom, respawn at the top
 		currentColor = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
