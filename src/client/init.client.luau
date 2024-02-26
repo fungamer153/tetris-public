@@ -204,16 +204,13 @@ local shapes: table = {
 
 -- Creates new block
 function createVisualGrid()
-	local ScreenGui: ScreenGui = Instance.new("ScreenGui")
-	ScreenGui.Name = "Tetris"
-	ScreenGui.Parent = player.PlayerGui
+	local ScreenGui: ScreenGui = player.PlayerGui.ScreenGui
+	local Frame: Frame = ScreenGui.ECUHacking.Background.Tetris
 
-	local newFrame: Frame = script.Frame:Clone()
-	newFrame.Parent = ScreenGui
-	Frame = newFrame.Holder
+	gridWidth = math.round(Frame.AbsoluteSize.X / blockSize)
+    gridHeight = math.round(Frame.AbsoluteSize.Y / blockSize)
 
-	gridWidth = Frame.Size.X.Offset / blockSize
-    gridHeight = Frame.Size.Y.Offset / blockSize
+	print(gridWidth, gridHeight)
 
 	for y: IntValue = 1, gridHeight do
 		grid[y] = {}
@@ -222,8 +219,8 @@ function createVisualGrid()
 		end
 	end
 
-	Frame.Parent.ScoreLower.Text = "0"
-	Frame.Parent.ScoreUpper.Text = "0"
+	-- Frame.Parent.ScoreLower.Text = "0"
+	-- Frame.Parent.ScoreUpper.Text = "0"
 
 	themeSound:Play()
 	TS:Create(themeSound, TweenInfo.new(.2), {PlaybackSpeed = 1}):Play()
