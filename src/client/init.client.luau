@@ -502,7 +502,6 @@ end
 
 function endGame()
 	local randomHint = messages["Loose"][math.random(1, #messages["Loose"])]
-
 	Frame.Parent.GameOver.Score.Text = "Score: "..currentPoints
 	Frame.Parent.GameOver.TextLabel.Text = randomHint
 	Frame.Parent.HintLower.Text = ""
