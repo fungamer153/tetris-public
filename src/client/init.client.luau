@@ -9,9 +9,10 @@ local player: Player = Players.LocalPlayer
 
 --// Variables
 local currentColor: Color3 = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
-local blockSize: IntValue = 20 -- Adjust the size of each cell
-local gridWidth: IntValue
-local gridHeight: IntValue
+local blockWidth: IntValue = 0.091
+local blockHeight: IntValue = 0.045
+local gridWidth: IntValue = 10
+local gridHeight: IntValue = 21
 
 local Frame: Frame
 local grid: table = {}
@@ -207,11 +208,6 @@ function createVisualGrid()
 	local ScreenGui: ScreenGui = player.PlayerGui.ScreenGui
 	local Frame: Frame = ScreenGui.ECUHacking.Background.Tetris
 
-	gridWidth = math.round(Frame.AbsoluteSize.X / blockSize)
-    gridHeight = math.round(Frame.AbsoluteSize.Y / blockSize)
-
-	print(gridWidth, gridHeight)
-
 	for y: IntValue = 1, gridHeight do
 		grid[y] = {}
 		for x: IntValue = 1, gridWidth do
@@ -230,9 +226,9 @@ end
 
 function createCell(x: IntValue, y: IntValue, value: IntValue)
 	local cell = Instance.new("Frame")
-	cell.Size = UDim2.new(0, blockSize, 0, blockSize)
+	cell.Size = UDim2.new(blockWidth, 0, blockHeight, 0)
 	cell.BorderSizePixel = 0
-	cell.Position = UDim2.new(0, x * blockSize, 0, y * blockSize)
+	cell.Position = UDim2.new(x * blockWidth, 0, y * blockHeight, 0)
 	cell.BackgroundTransparency = 0.1
 	cell.ZIndex = 2
 	cell.Parent = Frame
