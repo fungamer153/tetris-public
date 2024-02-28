@@ -206,7 +206,7 @@ local shapes: table = {
 -- Creates new block
 function createVisualGrid()
 	local ScreenGui: ScreenGui = player.PlayerGui.ScreenGui
-	local Frame: Frame = ScreenGui.ECUHacking.Background.Tetris
+	Frame = ScreenGui.ECUHacking.Background.Tetris.Holder
 
 	for y: IntValue = 1, gridHeight do
 		grid[y] = {}
@@ -215,8 +215,7 @@ function createVisualGrid()
 		end
 	end
 
-	-- Frame.Parent.ScoreLower.Text = "0"
-	-- Frame.Parent.ScoreUpper.Text = "0"
+	Frame.Parent.Score.Text = "0"
 
 	themeSound:Play()
 	TS:Create(themeSound, TweenInfo.new(.2), {PlaybackSpeed = 1}):Play()
@@ -452,8 +451,7 @@ function moveBlockDown(grid: table)
 				clearSound:Play()
 
 				local randomHint = messages["Positive"][math.random(1, #messages["Positive"])]
-				Frame.Parent.HintLower.Text = randomHint
-				Frame.Parent.HintUpper.Text = randomHint
+				Frame.Parent.Hint.Text = randomHint
 
 				-- Go up in each row to move each block down by 1 row
 				for x: IntValue = 1, gridWidth do
@@ -474,8 +472,7 @@ function moveBlockDown(grid: table)
 				break
 			elseif fullRow == false then
 				local randomHint = messages["Negative"][math.random(1, #messages["Negative"])]
-				Frame.Parent.HintLower.Text = randomHint
-				Frame.Parent.HintUpper.Text = randomHint
+				Frame.Parent.Hint.Text = randomHint
 			end
         end
 		
@@ -492,16 +489,14 @@ end
 
 function addPoints()
 	currentPoints += 100
-	Frame.Parent.ScoreUpper.Text = currentPoints
-	Frame.Parent.ScoreLower.Text = currentPoints
+	Frame.Parent.Score.Text = currentPoints
 end
 
 function endGame()
 	local randomHint = messages["Loose"][math.random(1, #messages["Loose"])]
 	Frame.Parent.GameOver.Score.Text = "Score: "..currentPoints
 	Frame.Parent.GameOver.TextLabel.Text = randomHint
-	Frame.Parent.HintLower.Text = ""
-	Frame.Parent.HintUpper.Text = ""
+	Frame.Parent.Hint.Text = ""
 
 	TS:Create(Frame.Parent.GameOver, TweenInfo.new(.85, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
 	TS:Create(themeSound, TweenInfo.new(.7), {PlaybackSpeed = 0}):Play()
@@ -533,6 +528,7 @@ end
 
 --// Events
 player.CharacterAdded:Wait():WaitForChild("Humanoid").WalkSpeed = 0
+createVisualGrid()
 
 gameConnection = Run.Heartbeat:Connect(function(deltaTime)
 	if not gameRunning then gameConnection:Disconnect() return end
@@ -541,6 +537,5 @@ gameConnection = Run.Heartbeat:Connect(function(deltaTime)
 	moveBlockDown(grid)
 end)
 
-createVisualGrid()
 UserInputService.InputBegan:Connect(handleKeyPress)
 UserInputService.InputEnded:Connect(handleKeyRelease)
