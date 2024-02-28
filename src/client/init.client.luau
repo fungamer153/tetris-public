@@ -11,7 +11,7 @@ local player: Player = Players.LocalPlayer
 local currentColor: Color3 = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
 local blockWidth: IntValue = 0.091
 local blockHeight: IntValue = 0.045
-local gridWidth: IntValue = 10
+local gridWidth: IntValue = 11
 local gridHeight: IntValue = 21
 
 local Frame: Frame
